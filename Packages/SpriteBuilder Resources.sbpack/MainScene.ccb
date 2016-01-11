@@ -156,6 +156,19 @@
 						<array/>
 						<key>customClass</key>
 						<string>SubShapeNode</string>
+						<key>customProperties</key>
+						<array>
+							<dict>
+								<key>name</key>
+								<string>identifier</string>
+								<key>optimized</key>
+								<false/>
+								<key>type</key>
+								<integer>3</integer>
+								<key>value</key>
+								<string>linchpin</string>
+							</dict>
+						</array>
 						<key>displayName</key>
 						<string>s1</string>
 						<key>memberVarAssignmentName</key>
@@ -262,7 +275,7 @@
 								<string>Position</string>
 								<key>value</key>
 								<array>
-									<real>216</real>
+									<real>230</real>
 									<real>198</real>
 									<integer>0</integer>
 									<integer>0</integer>
@@ -337,8 +350,6 @@
 								<array/>
 							</dict>
 						</array>
-						<key>selected</key>
-						<true/>
 					</dict>
 					<dict>
 						<key>UUID</key>
@@ -349,6 +360,19 @@
 						<array/>
 						<key>customClass</key>
 						<string>SubShapeNode</string>
+						<key>customProperties</key>
+						<array>
+							<dict>
+								<key>name</key>
+								<string>identifier</string>
+								<key>optimized</key>
+								<false/>
+								<key>type</key>
+								<integer>3</integer>
+								<key>value</key>
+								<string>triangle</string>
+							</dict>
+						</array>
 						<key>displayName</key>
 						<string>s2</string>
 						<key>memberVarAssignmentName</key>
@@ -368,7 +392,7 @@
 							<key>collisionMask</key>
 							<array/>
 							<key>collisionType</key>
-							<string></string>
+							<string>shape</string>
 							<key>cornerRadius</key>
 							<real>0.0</real>
 							<key>density</key>
@@ -429,8 +453,8 @@
 								<string>Position</string>
 								<key>value</key>
 								<array>
-									<real>189</real>
-									<real>305</real>
+									<real>373</real>
+									<real>198</real>
 									<integer>0</integer>
 									<integer>0</integer>
 									<integer>0</integer>
@@ -504,6 +528,8 @@
 								<array/>
 							</dict>
 						</array>
+						<key>selected</key>
+						<true/>
 					</dict>
 					<dict>
 						<key>UUID</key>
@@ -514,6 +540,19 @@
 						<array/>
 						<key>customClass</key>
 						<string>SubShapeNode</string>
+						<key>customProperties</key>
+						<array>
+							<dict>
+								<key>name</key>
+								<string>identifier</string>
+								<key>optimized</key>
+								<false/>
+								<key>type</key>
+								<integer>3</integer>
+								<key>value</key>
+								<string>long</string>
+							</dict>
+						</array>
 						<key>displayName</key>
 						<string>s3</string>
 						<key>memberVarAssignmentName</key>
@@ -533,7 +572,7 @@
 							<key>collisionMask</key>
 							<array/>
 							<key>collisionType</key>
-							<string></string>
+							<string>shape</string>
 							<key>cornerRadius</key>
 							<real>0.0</real>
 							<key>density</key>
@@ -602,8 +641,8 @@
 								<string>Position</string>
 								<key>value</key>
 								<array>
-									<real>212</real>
-									<real>83</real>
+									<real>230</real>
+									<real>99.000007629394531</real>
 									<integer>0</integer>
 									<integer>0</integer>
 									<integer>0</integer>
@@ -687,6 +726,19 @@
 						<array/>
 						<key>customClass</key>
 						<string>SubShapeNode</string>
+						<key>customProperties</key>
+						<array>
+							<dict>
+								<key>name</key>
+								<string>identifier</string>
+								<key>optimized</key>
+								<false/>
+								<key>type</key>
+								<integer>3</integer>
+								<key>value</key>
+								<string>short</string>
+							</dict>
+						</array>
 						<key>displayName</key>
 						<string>s4</string>
 						<key>memberVarAssignmentName</key>
@@ -706,7 +758,7 @@
 							<key>collisionMask</key>
 							<array/>
 							<key>collisionType</key>
-							<string></string>
+							<string>shape</string>
 							<key>cornerRadius</key>
 							<real>0.0</real>
 							<key>density</key>
@@ -775,8 +827,8 @@
 								<string>Position</string>
 								<key>value</key>
 								<array>
-									<real>399</real>
-									<real>267</real>
+									<real>373</real>
+									<real>99.000007629394531</real>
 									<integer>0</integer>
 									<integer>0</integer>
 									<integer>0</integer>
