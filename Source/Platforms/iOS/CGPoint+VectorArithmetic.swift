@@ -1,5 +1,5 @@
 //
-//  CGPoint+VectorAddition.swift
+//  CGPoint+VectorArithmetic.swift
 //  ShapePuzzle
 //
 //  Created by asu on 2016-01-10.
@@ -12,3 +12,6 @@ func +(left: CGPoint, right: CGPoint) -> CGPoint{
     return CGPointMake(left.x + right.x, left.y + right.y)
 }
 
+func -(left: CGPoint, right: CGPoint) -> CGPoint{
+    return CGPointMake(left.x - right.x, left.y - right.y)
+}

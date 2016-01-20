@@ -23,6 +23,7 @@ class SubShapeNode: CCSprite {
         
         self.physicsBody.friction = 1.0
         self.physicsBody.elasticity = 0.0
+        
     }
     
 }
