@@ -17,8 +17,10 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
     var tapDetector: UITapGestureRecognizer!
     
     var panDetector: UIPanGestureRecognizer!
-    var panStart:CGPoint?
 
+    var panStart:CGPoint?
+    var rotationStartVector:CGPoint?
+    
     var selected: SubShapeNode?
     
     func didLoadFromCCB()
@@ -45,7 +47,9 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
 
     func selectedShape(gesture:UIGestureRecognizer) -> Bool
     {
+        deselect()
         self.selected = touchedNode(gesture) as? SubShapeNode
+        self.selected?.color = CCColor.blueColor()
         return self.selected != nil
     }
     
@@ -107,47 +111,84 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
            
         });
     }
+
+    func deselect()
+    {
+		self.selected?.color = CCColor.whiteColor()
+        self.selected = nil
+    }
     
     func resetForNextPan()
     {
         panStart = nil
-        self.selected = nil
+    }
+    
+    func cancelPan()
+    {
+        panDetector.enabled = false
+        panDetector.enabled = true
     }
     
     func moveShape(pan:UIPanGestureRecognizer)
     {
-        guard self.selected != nil || selectedShape(pan) else
-        {
-            return
-        }
-
-        let deltaVector = pan.translationInView(sceneView)
-        
         if (panStart == nil)
         {
+            guard selectedShape(pan) else
+            {
+                cancelPan()
+                return
+            }
+            
             panStart = pan.locationInView(sceneView)
         }
         
+        let deltaVector = pan.translationInView(sceneView)
+
         let translatedLocation = panStart! + deltaVector
         
         let moveToPoint = CCDirector.sharedDirector().convertToGL(translatedLocation)
         
         self.selected!.position = moveToPoint
-        
-        if (pan.state == .Ended)
-        {
-            panStart = nil;
-        }
-
     
     }
 
     func rotateShape(pan:UIPanGestureRecognizer)
     {
+        guard self.selected != nil else
+        {
+            return
+        }
+
+        let p1 = pan.locationOfTouch(0, inView: sceneView)
+        let p2 = pan.locationOfTouch(1, inView: sceneView)
+
+        let angleVector = p2 - p1
         
+        if (rotationStartVector == nil)
+        {
+            rotationStartVector = angleVector
+        }
+        
+        let initialAngle = radiansFromVector(rotationStartVector!)
+        let deltaAngle = radiansFromVector(angleVector)
+        
+        let finalAngle = initialAngle + deltaAngle
 
+        self.selected!.rotation = finalAngle
 
+        
+        //            let angle = Float(atan(angleVector.y / angleVector.x)) * Float(180.0/M_PI)
+        //            //            let angle = Float(atan2(angleVector.y , angleVector.x)) * Float(180.0/M_PI)
+        //
+        //            print ("ANGLE: \(angle)")
+        //            panShape!.rotation = angle
+        //            
+
+        
     }
 
-    
+    func radiansFromVector(vector: CGPoint) -> Float
+    {
+        return Float(atan2(vector.y , vector.x)) * Float(180.0/M_PI)
+    }
 }
