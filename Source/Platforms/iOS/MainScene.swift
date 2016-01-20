@@ -45,16 +45,8 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
 
     func selectedShape(gesture:UIGestureRecognizer) -> Bool
     {
-        guard let node = touchedNode(gesture) as? SubShapeNode else
-        {
-            print ("DESELECT")
-            self.selected = nil
-            return false
-        }
-        
-        print ("SELECT")
-        self.selected = node
-        return true
+        self.selected = touchedNode(gesture) as? SubShapeNode
+        return self.selected != nil
     }
     
     func touchedNode(gesture:UIGestureRecognizer) -> CCNode?
@@ -72,49 +64,7 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
         return node
     }
     
-//    func gestureRecognizer(sender: UIGestureRecognizer, shouldReceiveTouch touch: UITouch) -> Bool
-//    {
-//        
-//        print ("SENDER: \(sender) \nTOUCH: \(touch) *")
-//        return true
-//        
-//    }
-//
-//    func gestureRecognizerShouldBegin(sender: UIGestureRecognizer) -> Bool
-//    {
-//    func x(sender:UIGestureRecognizer) -> Bool
-//    {
-//    	guard let pan = sender as? UIPanGestureRecognizer else
-//        {
-//            return false
-//        }
-//        
-//	    guard let node = touchedNode(pan) else
-//        {
-//            return false
-//        }
-//        
-//        var otherNode: CCNode? = nil
-//        
-//		let touchCount = pan.numberOfTouches()
-//        
-//        if (touchCount > 1)
-//        {
-//            otherNode = touchedNodeAtPoint( pan.locationOfTouch(1, inView: sceneView) )
-//        }
-//        
-//        if (node.isKindOfClass(SubShapeNode))
-//        {
-//            return true
-//        }
-//        
-//        if (otherNode != nil && otherNode!.isKindOfClass(SubShapeNode))
-//        {
-//            return true
-//        }
-//        
-//        return false;
-//    }
+
     
     func synchronized<T>(lock: AnyObject, @noescape closure: () throws -> T) rethrows -> T
     {
@@ -134,7 +84,6 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
             return
         }
 
-        print ("\(self.selected!.identifier)")
     }
     
     func panning(pan:UIPanGestureRecognizer)
@@ -161,7 +110,6 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
     
     func resetForNextPan()
     {
-        print("\(NSDate()) PAN reset")
         panStart = nil
         self.selected = nil
     }
@@ -173,16 +121,10 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
             return
         }
 
-        print("\(NSDate()) PAN \(pan.state.rawValue)")
-
-        
         let deltaVector = pan.translationInView(sceneView)
         
         if (panStart == nil)
         {
-            print("\(NSDate()) PAN start")
-            
-
             panStart = pan.locationInView(sceneView)
         }
         
@@ -194,9 +136,6 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
         
         if (pan.state == .Ended)
         {
-            print("\(NSDate()) PAN end")
-            
-
             panStart = nil;
         }
 
@@ -206,46 +145,9 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
     func rotateShape(pan:UIPanGestureRecognizer)
     {
         
-//        if (touchCount > 1)
-//        {
-//            let p1 = pan.locationOfTouch(0, inView: sceneView)
-//            let p2 = pan.locationOfTouch(1, inView: sceneView)
-//            
-//            let angleVector = p2 - p1
-//            let angle = Float(atan(angleVector.y / angleVector.x)) * Float(180.0/M_PI)
-//            //            let angle = Float(atan2(angleVector.y , angleVector.x)) * Float(180.0/M_PI)
-//            
-//            print ("ANGLE: \(angle)")
-//            panShape!.rotation = angle
-//            
-//        }
+
 
     }
 
-
-
-//    func ccPhysicsCollisionBegin(pair: CCPhysicsCollisionPair!, shape shapeA: SubShapeNode!, shape shapeB: SubShapeNode!) -> Bool
-//    {
-//        print ("COLLIDE BEGIN \(shapeA.identifier) vs \(shapeB.identifier)")
-//        
-//        pair.restitution = 1.0
-//        
-//        return true;
-//    }
-//
-//    
-//    func ccPhysicsCollisionPostSolve(pair: CCPhysicsCollisionPair!, shape shapeA: SubShapeNode!, shape shapeB: SubShapeNode!) -> Bool
-//    {
-//        print ("COLLIDE POST \(shapeA.identifier) vs \(shapeB.identifier)")
-//
-//        pair.restitution = 1.0
-//        
-//        return true;
-//    }
-    
-    
-
-    
-    
     
 }
