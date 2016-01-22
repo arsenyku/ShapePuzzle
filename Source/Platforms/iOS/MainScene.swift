@@ -10,6 +10,7 @@ import UIKit
 
 class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
 {
+
     
     weak var gamePhysicsNode: CCPhysicsNode!
     weak var sceneView: UIView!
@@ -31,7 +32,7 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
         
         panDetector = UIPanGestureRecognizer(target: self, action:Selector("panning:"))
         panDetector.minimumNumberOfTouches = 1
-        panDetector.maximumNumberOfTouches = 2
+        panDetector.maximumNumberOfTouches = 1
         panDetector.delegate = self;
 
         sceneView = CCDirector.sharedDirector().view
@@ -39,18 +40,26 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
         sceneView.addGestureRecognizer(tapDetector)
         
     	gamePhysicsNode.collisionDelegate = self
-        print ("\(gamePhysicsNode)")
-        print ("\(gamePhysicsNode.children)")
 
         
     }
 
+    func isTranslating() -> Bool
+    {
+        return panStart != nil && selected != nil && rotationStartVector == nil
+    }
+    
+    func isRotating() -> Bool
+    {
+    	return panStart != nil && selected != nil && rotationStartVector != nil
+    }
+    
     func selectedShape(gesture:UIGestureRecognizer) -> Bool
     {
         deselect()
-        self.selected = touchedNode(gesture) as? SubShapeNode
-        self.selected?.color = CCColor.blueColor()
-        return self.selected != nil
+        selected = touchedNode(gesture) as? SubShapeNode
+        selected?.color = CCColor.blueColor()
+        return selected != nil
     }
     
     func touchedNode(gesture:UIGestureRecognizer) -> CCNode?
@@ -94,19 +103,20 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
     {
         synchronized(gamePhysicsNode, closure:
     	{
-            let touchCount = pan.numberOfTouches()
-
-            switch(touchCount)
+            checkPanStartOrEnd(pan)
+            
+            guard selected != nil else
             {
-            case 0:
-                resetForNextPan()
-            case 1:
-                moveShape(pan)
-            case 2:
+              return
+            }
+            
+            if (isTranslating())
+            {
+            	moveShape(pan)
+            }
+            else if (isRotating())
+            {
                 rotateShape(pan)
-            default:
-                break;
-                
             }
            
         });
@@ -114,13 +124,14 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
 
     func deselect()
     {
-		self.selected?.color = CCColor.whiteColor()
-        self.selected = nil
+		selected?.color = CCColor.whiteColor()
+        selected = nil
     }
     
     func resetForNextPan()
     {
         panStart = nil
+        rotationStartVector = nil
     }
     
     func cancelPan()
@@ -129,19 +140,37 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
         panDetector.enabled = true
     }
     
-    func moveShape(pan:UIPanGestureRecognizer)
+    func checkPanStartOrEnd(pan:UIPanGestureRecognizer)
     {
-        if (panStart == nil)
+        if (pan.numberOfTouches() == 0)
         {
-            guard selectedShape(pan) else
-            {
-                cancelPan()
-                return
-            }
-            
-            panStart = pan.locationInView(sceneView)
+            resetForNextPan()
+            return;
         }
         
+        if (panStart == nil)
+        {
+
+            panStart = pan.locationInView(sceneView)
+            
+            let touched = touchedNodeAtPoint(panStart!)
+
+            if (touched == nil)
+            {
+                rotationStartVector = panStart! - selected!.position
+            }
+            else
+            {
+                rotationStartVector = nil
+                selectedShape(pan)
+            }
+            
+        }
+
+    }
+    
+    func moveShape(pan:UIPanGestureRecognizer)
+    {
         let deltaVector = pan.translationInView(sceneView)
 
         let translatedLocation = panStart! + deltaVector
@@ -159,36 +188,34 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
             return
         }
 
-        let p1 = pan.locationOfTouch(0, inView: sceneView)
-        let p2 = pan.locationOfTouch(1, inView: sceneView)
+        let p1 = selected!.position
+        let p2 = pan.locationInView(sceneView)
 
         let angleVector = p2 - p1
         
-        if (rotationStartVector == nil)
-        {
-            rotationStartVector = angleVector
-        }
+        let initialAngle = degreesFromVector(rotationStartVector!)
+        let newAngleInRadians = CGFloat(radiansFromVector(angleVector))
+        let newAngle = degreesFromRadians(Float(newAngleInRadians))
         
-        let initialAngle = radiansFromVector(rotationStartVector!)
-        let deltaAngle = radiansFromVector(angleVector)
-        
-        let finalAngle = initialAngle + deltaAngle
-
-        self.selected!.rotation = finalAngle
-
-        
-        //            let angle = Float(atan(angleVector.y / angleVector.x)) * Float(180.0/M_PI)
-        //            //            let angle = Float(atan2(angleVector.y , angleVector.x)) * Float(180.0/M_PI)
-        //
-        //            print ("ANGLE: \(angle)")
-        //            panShape!.rotation = angle
-        //            
-
+        let deltaAngle = newAngle - initialAngle
+    
+        selected!.rotation += deltaAngle
+        rotationStartVector = CGPointMake(cos(newAngleInRadians), sin(newAngleInRadians))
         
     }
 
+    func degreesFromRadians(radians: Float) -> Float
+    {
+        return radians * Float(180.0/M_PI)
+    }
+    
+    func degreesFromVector(vector: CGPoint) -> Float
+    {
+        return radiansFromVector(vector) * Float(180.0/M_PI)
+    }
+    
     func radiansFromVector(vector: CGPoint) -> Float
     {
-        return Float(atan2(vector.y , vector.x)) * Float(180.0/M_PI)
+        return Float(atan2(vector.y , vector.x))
     }
 }
