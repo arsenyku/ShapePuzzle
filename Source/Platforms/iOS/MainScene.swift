@@ -16,7 +16,7 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
     weak var sceneView: UIView!
 
     var tapDetector: UITapGestureRecognizer!
-    
+    var doubleTapDetector: UITapGestureRecognizer!
     var panDetector: UIPanGestureRecognizer!
 
     var panStart:CGPoint?
@@ -28,16 +28,23 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
     {
 
         tapDetector = UITapGestureRecognizer(target: self, action:Selector("tapped:"))
-        tapDetector.delegate = self;
+        tapDetector.delegate = self
         
+        doubleTapDetector = UITapGestureRecognizer(target: self, action:Selector("doubleTapped:"))
+        doubleTapDetector.numberOfTapsRequired = 2
+        doubleTapDetector.delegate = self
+
         panDetector = UIPanGestureRecognizer(target: self, action:Selector("panning:"))
         panDetector.minimumNumberOfTouches = 1
         panDetector.maximumNumberOfTouches = 1
-        panDetector.delegate = self;
+        panDetector.delegate = self
 
         sceneView = CCDirector.sharedDirector().view
         sceneView.addGestureRecognizer(panDetector)
         sceneView.addGestureRecognizer(tapDetector)
+        sceneView.addGestureRecognizer(doubleTapDetector)
+        
+        tapDetector.requireGestureRecognizerToFail(doubleTapDetector)
         
     	gamePhysicsNode.collisionDelegate = self
 
@@ -54,11 +61,17 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
     	return panStart != nil && selected != nil && rotationStartVector != nil
     }
     
-    func selectedShape(gesture:UIGestureRecognizer) -> Bool
+    func selectNode(node: CCNode?)
     {
         deselect()
-        selected = touchedNode(gesture) as? SubShapeNode
+        selected = node as? SubShapeNode
         selected?.color = CCColor.blueColor()
+
+    }
+    
+    func selectedShape(gesture:UIGestureRecognizer) -> Bool
+    {
+        selectNode(touchedNode(gesture))
         return selected != nil
     }
     
@@ -91,12 +104,21 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
     
     func tapped(tap:UITapGestureRecognizer)
     {
-
         guard selectedShape(tap) else
         {
             return
         }
 
+    }
+    
+    func doubleTapped(doubleTap:UITapGestureRecognizer)
+    {
+        guard selectedShape(doubleTap) else
+        {
+            return
+        }
+ 
+		flipSelected()
     }
     
     func panning(pan:UIPanGestureRecognizer)
@@ -203,6 +225,34 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
         rotationStartVector = CGPointMake(cos(newAngleInRadians), sin(newAngleInRadians))
         
     }
+
+    func flipSelected()
+    {
+        let showShape = selected?.mirrorShape
+        let hideShape = selected
+        
+        guard showShape != nil && hideShape != nil else
+        {
+        	return
+        }
+        
+        substitute(shape: showShape!, andRemove: hideShape!)
+
+    }
+
+    func substitute(shape shapeToShow:SubShapeNode, andRemove shapeToRemove:SubShapeNode)
+    {        
+        shapeToShow.rotation = shapeToRemove.rotation
+        shapeToShow.position = shapeToRemove.position
+        
+        shapeToRemove.position = CGPointMake(sceneView.frame.origin.x - 1000, sceneView.frame.origin.y - 1000)
+                
+        if (selected == shapeToRemove)
+        {
+            selectNode(shapeToShow)
+        }
+    }
+    
 
     func degreesFromRadians(radians: Float) -> Float
     {
