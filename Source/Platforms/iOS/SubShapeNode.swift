@@ -10,6 +10,13 @@ import UIKit
 
 class SubShapeNode: CCSprite {
     
+    static let SelectedZOrder = 100
+    static let NormalZOrder = 0
+    
+    static let SelectedColour = CCColor.blueColor()
+    static let NormalColour = CCColor.init(red: 0.9, green: 0.9, blue: 0.9)
+    
+    
     var identifier: String?
     
     var mirrorShape: SubShapeNode!
@@ -22,7 +29,9 @@ class SubShapeNode: CCSprite {
         
         sceneView = CCDirector.sharedDirector().view
         
-        zOrder = 0
+        zOrder = SubShapeNode.NormalZOrder
+        
+        color = SubShapeNode.NormalColour
         
         physicsBody.friction = 1.0
         physicsBody.elasticity = 0.0

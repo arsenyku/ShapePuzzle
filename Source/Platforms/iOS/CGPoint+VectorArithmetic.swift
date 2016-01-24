@@ -15,3 +15,11 @@ func +(left: CGPoint, right: CGPoint) -> CGPoint{
 func -(left: CGPoint, right: CGPoint) -> CGPoint{
     return CGPointMake(left.x - right.x, left.y - right.y)
 }
+
+extension CGPoint {
+    func normalize() -> CGPoint
+    {
+        let magnitude = sqrt( pow(x,2) + pow(y,2) )
+        return CGPointMake(x/magnitude,y/magnitude)
+    }
+}

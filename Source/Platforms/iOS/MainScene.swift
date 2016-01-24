@@ -65,7 +65,8 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
     {
         deselect()
         selected = node as? SubShapeNode
-        selected?.color = CCColor.blueColor()
+        selected?.color = SubShapeNode.SelectedColour
+        selected?.zOrder = SubShapeNode.SelectedZOrder
 
     }
     
@@ -101,6 +102,14 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
         }
         return try closure()
     }
+
+    
+    func ccPhysicsCollisionBegin(pair: CCPhysicsCollisionPair!, shape shapeA: SubShapeNode!, shape shapeB: SubShapeNode!) -> Bool {
+            
+    	return false
+        
+    }
+
     
     func tapped(tap:UITapGestureRecognizer)
     {
