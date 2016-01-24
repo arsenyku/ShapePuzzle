@@ -22,4 +22,20 @@ extension CGPoint {
         let magnitude = sqrt( pow(x,2) + pow(y,2) )
         return CGPointMake(x/magnitude,y/magnitude)
     }
+    
+    func degreesFromRadians(radians: Float) -> Float
+    {
+        return radians * Float(180.0/M_PI)
+    }
+    
+    func inDegrees() -> Float
+    {
+        return degreesFromRadians(self.inRadians())
+    }
+    
+    func inRadians() -> Float
+    {
+        return Float(atan2(y , x))
+    }
+
 }

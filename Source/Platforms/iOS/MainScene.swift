@@ -10,8 +10,6 @@ import UIKit
 
 class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
 {
-
-    
     weak var gamePhysicsNode: CCPhysicsNode!
     weak var sceneView: UIView!
 
@@ -21,8 +19,12 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
 
     var panStart:CGPoint?
     var rotationStartVector:CGPoint?
+    var angleOfSelectedAtStartOfRotation:Float?
     
     var selected: SubShapeNode?
+    
+    var touchableView: TouchableView = { return TouchableView() }()
+
     
     func didLoadFromCCB()
     {
@@ -47,9 +49,12 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
         tapDetector.requireGestureRecognizerToFail(doubleTapDetector)
         
     	gamePhysicsNode.collisionDelegate = self
-
         
+        sceneView.addSubview(touchableView)
+        touchableView.initView()
     }
+    
+    
 
     func isTranslating() -> Bool
     {
@@ -141,6 +146,12 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
               return
             }
             
+            let touchPoint = pan.locationInView(sceneView)
+            touchableView.draw(from:selected!.position, to:touchPoint)
+            
+            print ("\(touchableView.lineAngleInDegrees())")
+            
+
             if (isTranslating())
             {
             	moveShape(pan)
@@ -163,6 +174,7 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
     {
         panStart = nil
         rotationStartVector = nil
+        angleOfSelectedAtStartOfRotation = nil
     }
     
     func cancelPan()
@@ -189,10 +201,12 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
             if (touched == nil)
             {
                 rotationStartVector = panStart! - selected!.position
+                angleOfSelectedAtStartOfRotation = selected!.rotation
             }
             else
             {
                 rotationStartVector = nil
+                angleOfSelectedAtStartOfRotation = nil
                 selectedShape(pan)
             }
             
@@ -219,17 +233,21 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
             return
         }
 
+        let startAngleInDegrees = -rotationStartVector!.inDegrees()
+        
+        
         let p1 = selected!.position
         let p2 = pan.locationInView(sceneView)
 
-		let angleVector = p2 - p1
-        
-        let angleInDegrees = degreesFromVector(angleVector)
+		let angleVectorOfTouchPoint = p2 - p1
+        let angleOfTouchPointInDegrees = -angleVectorOfTouchPoint.inDegrees()
+
+        let deltaAngle = startAngleInDegrees - angleOfTouchPointInDegrees
         
 //        let newAngleInRadians = CGFloat(radiansFromVector(angleVector))
 //        let newAngle = degreesFromRadians(Float(newAngleInRadians))
         
-        selected!.rotation = angleInDegrees
+        selected!.rotation = angleOfSelectedAtStartOfRotation! + deltaAngle
         
     }
 
@@ -261,18 +279,4 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
     }
     
 
-    func degreesFromRadians(radians: Float) -> Float
-    {
-        return radians * Float(180.0/M_PI)
-    }
-    
-    func degreesFromVector(vector: CGPoint) -> Float
-    {
-        return radiansFromVector(vector) * Float(180.0/M_PI)
-    }
-    
-    func radiansFromVector(vector: CGPoint) -> Float
-    {
-        return Float(atan2(vector.y , vector.x))
-    }
 }
