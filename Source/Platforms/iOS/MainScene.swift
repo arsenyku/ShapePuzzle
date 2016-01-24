@@ -155,7 +155,7 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
 
     func deselect()
     {
-		selected?.color = CCColor.whiteColor()
+		selected?.color = SubShapeNode.NormalColour
         selected = nil
     }
     
@@ -208,13 +208,13 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
         
         let moveToPoint = CCDirector.sharedDirector().convertToGL(translatedLocation)
         
-        self.selected!.position = moveToPoint
+        selected!.position = moveToPoint
     
     }
 
     func rotateShape(pan:UIPanGestureRecognizer)
     {
-        guard self.selected != nil else
+        guard selected != nil else
         {
             return
         }
@@ -222,16 +222,14 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
         let p1 = selected!.position
         let p2 = pan.locationInView(sceneView)
 
-        let angleVector = p2 - p1
+		let angleVector = p2 - p1
         
-        let initialAngle = degreesFromVector(rotationStartVector!)
-        let newAngleInRadians = CGFloat(radiansFromVector(angleVector))
-        let newAngle = degreesFromRadians(Float(newAngleInRadians))
+        let angleInDegrees = degreesFromVector(angleVector)
         
-        let deltaAngle = newAngle - initialAngle
-    
-        selected!.rotation += deltaAngle
-        rotationStartVector = CGPointMake(cos(newAngleInRadians), sin(newAngleInRadians))
+//        let newAngleInRadians = CGFloat(radiansFromVector(angleVector))
+//        let newAngle = degreesFromRadians(Float(newAngleInRadians))
+        
+        selected!.rotation = angleInDegrees
         
     }
 
