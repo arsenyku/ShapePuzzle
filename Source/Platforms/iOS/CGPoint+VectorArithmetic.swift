@@ -38,4 +38,9 @@ extension CGPoint {
         return Float(atan2(y , x))
     }
 
+    func flipY() -> CGPoint
+    {
+        return CGPointMake(x,-y)
+    }
+    
 }

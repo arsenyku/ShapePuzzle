@@ -146,12 +146,8 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
               return
             }
             
-            let touchPoint = pan.locationInView(sceneView)
-            touchableView.draw(from:selected!.position, to:touchPoint)
+            drawDebugOutline(pan)
             
-            print ("\(touchableView.lineAngleInDegrees())")
-            
-
             if (isTranslating())
             {
             	moveShape(pan)
@@ -163,6 +159,21 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
            
         });
     }
+    
+    func drawDebugOutline(pan:UIPanGestureRecognizer)
+    {
+//        guard selected != nil else { return }
+//        
+//        var touchPoint = pan.locationInView(sceneView)
+//        touchPoint = selected!.convertToNodeSpace(touchPoint)
+//        
+//        touchableView.drawRectangle(selected!.boundingBox())
+//        touchableView.draw(from:selected!.position, to:touchPoint)
+//        
+//        print ("\(touchableView.lineAngleInDegrees())")
+//        
+    }
+    
 
     func deselect()
     {
@@ -193,14 +204,16 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
         
         if (panStart == nil)
         {
-
             panStart = pan.locationInView(sceneView)
             
             let touched = touchedNodeAtPoint(panStart!)
 
-            if (touched == nil)
+            if (touched == nil && selected != nil)
             {
-                rotationStartVector = panStart! - selected!.position
+                let p1 = gamePhysicsNode.convertToWindowSpace(selected!.position)
+                let p2 = panStart!
+
+                rotationStartVector = p2 - p1
                 angleOfSelectedAtStartOfRotation = selected!.rotation
             }
             else
@@ -235,19 +248,15 @@ class MainScene: CCNode, CCPhysicsCollisionDelegate, UIGestureRecognizerDelegate
 
         let startAngleInDegrees = -rotationStartVector!.inDegrees()
         
-        
-        let p1 = selected!.position
+        let p1 = gamePhysicsNode.convertToWindowSpace(selected!.position)
         let p2 = pan.locationInView(sceneView)
 
 		let angleVectorOfTouchPoint = p2 - p1
         let angleOfTouchPointInDegrees = -angleVectorOfTouchPoint.inDegrees()
 
         let deltaAngle = startAngleInDegrees - angleOfTouchPointInDegrees
-        
-//        let newAngleInRadians = CGFloat(radiansFromVector(angleVector))
-//        let newAngle = degreesFromRadians(Float(newAngleInRadians))
-        
         selected!.rotation = angleOfSelectedAtStartOfRotation! + deltaAngle
+        
         
     }
 
